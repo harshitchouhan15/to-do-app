@@ -56,7 +56,7 @@ export default function Sidebar() {
           <DropdownMenuTrigger   className=" flex items-center gap-8 justify-between bg-[#fff] text-[#15023a] rounded-lg p-2 ">
             <div className=" flex items-center gap-2 ">
               <Avatar className=" text-[#15023a] font-semibold " >
-                <AvatarFallback>
+                <AvatarFallback className="text-sm" >
                   {user?.name.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>

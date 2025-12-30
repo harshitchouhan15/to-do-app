@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from "react";
 
 import { useState } from "react";
 import { format } from "date-fns";
@@ -27,53 +27,49 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { CalendarIcon, Plus } from "lucide-react";
-import { useModal } from '@/context/ModalContext';
-import type { ITask } from '@/types';
-import api from '@/lib/axios';
-import { showErrMsg } from '@/lib/utils';
-import { toast } from 'react-toastify';
-import AssignUserPopover from './AssignUserPopover';
+import { useModal } from "@/context/ModalContext";
+import type { ITask } from "@/types";
+import api from "@/lib/axios";
+import { showErrMsg } from "@/lib/utils";
+import { toast } from "react-toastify";
+import AssignUserPopover from "./AssignUserPopover";
 
-export default function TaskForm({fetchTasks}:{
-   fetchTasks: () => void
-}) {
-  const {modalType, openModal, closeModal, data} = useModal()
+export default function TaskForm({ fetchTasks }: { fetchTasks: () => void }) {
+  const { modalType, openModal, closeModal, data } = useModal();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("todo");
   const [priority, setPriority] = useState("medium");
   const [dueDate, setDueDate] = useState<Date | undefined>();
-    const [isLoading, setIsLoading] = useState(false)
-  const [value, setValue] = React.useState("")
+  const [isLoading, setIsLoading] = useState(false);
+  const [value, setValue] = React.useState("");
 
-  const [users, setUsers] = useState([])
+  const [users, setUsers] = useState([]);
 
-  useEffect(()=>{
-    api.get("/tasks/users/all").then((res)=>setUsers(res.data)).catch(err=>{})
+  useEffect(() => {
+    api
+      .get("/tasks/users/all")
+      .then((res) => setUsers(res.data))
+      .catch((err) => {});
+  }, []);
 
-  },[])
+  const isEdit = Boolean(data);
 
-
-
-    const isEdit = Boolean(data)
-
-    useEffect(()=>{
-        if(modalType==='task'&&data){
-             setTitle(data?.title)
-            setDescription(data.description)
-            setDueDate(new Date(data.dueDate))
-            setPriority(data.priority)
-            setStatus(data.status)
-           data.assignedTo?._id&& setValue(data.assignedTo._id)
-        }
-
-    },[data, modalType])
-  
+  useEffect(() => {
+    if (modalType === "task" && data) {
+      setTitle(data?.title);
+      setDescription(data.description);
+      setDueDate(new Date(data.dueDate));
+      setPriority(data.priority);
+      setStatus(data.status);
+      data.assignedTo?._id && setValue(data.assignedTo._id);
+    }
+  }, [data, modalType]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if(!dueDate) return toast.warning('Due date is required!')
+    if (!dueDate) return toast.warning("Due date is required!");
 
     const payload = {
       title,
@@ -81,74 +77,72 @@ export default function TaskForm({fetchTasks}:{
       status,
       priority,
       dueDate,
-      assignedTo:value||null
+      assignedTo: value || null,
     };
 
+    setIsLoading(true);
 
+    const url = isEdit ? `/tasks/${data?._id}` : "/tasks";
+    const method = isEdit ? `put` : "post";
 
-    
-    setIsLoading(true)
+    api[method](url, payload)
+      .then((res) => {
+        fetchTasks();
+        closeModal();
+        resetForm();
 
-    const url = isEdit?`/tasks/${data?._id}`:"/tasks";
-    const method = isEdit?`put`:"post";
-
-    api[method](url,payload).then((res)=>{
-        fetchTasks()
-    closeModal();
-    resetForm()
-
-    if(isEdit){
-        toast.success("Task updated")
-    }else{
-        toast.success("Task created")
-
-    }
-
-
-
-
-    }).catch(err=>{
-        showErrMsg(err)
-    }).finally(()=>{
-    setIsLoading(false)
-
-    })
-
+        if (isEdit) {
+          toast.success("Task updated");
+        } else {
+          toast.success("Task created");
+        }
+      })
+      .catch((err) => {
+        showErrMsg(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
-  const resetForm= ()=>{
-            setTitle("")
-            setDescription('')
-            setDueDate(undefined)
-            setPriority("medium")
-            setStatus('todo')
-            setValue('')
-  }
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setDueDate(undefined);
+    setPriority("medium");
+    setStatus("todo");
+    setValue("");
+  };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   return (
-    <Dialog open={modalType==="task"} onOpenChange={(open)=>{
+    <Dialog
+      open={modalType === "task"}
+      onOpenChange={(open) => {
         // console.log("first")
-        if(!open){
-           resetForm()
-            closeModal()
-        }else{
-            openModal("task",)
+        if (!open) {
+          resetForm();
+          closeModal();
+        } else {
+          openModal("task");
         }
-    }}>
-      <DialogTrigger className=' ' asChild>
-        <Button  >
+      }}
+    >
+      <DialogTrigger className=" " asChild>
+        <Button>
           <Plus className="mr-2 h-4 w-4" />
           Create Task
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="sm:max-w-xl max-h-[96vh] overflow-y-auto ">
         <DialogHeader>
-          <DialogTitle>{isEdit?"Update":"Create New"} Task</DialogTitle>
+          <DialogTitle>{isEdit ? "Update" : "Create New"} Task</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Title */}
           <div>
             <label className="text-sm font-medium">Title</label>
             <Input
@@ -159,17 +153,16 @@ export default function TaskForm({fetchTasks}:{
             />
           </div>
 
-          {/* Description */}
           <div>
             <label className="text-sm font-medium">Description</label>
             <Textarea
               placeholder="Task description"
               value={description}
+              // rows={5}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
 
-          {/* Status */}
           <div>
             <label className="text-sm font-medium">Status</label>
             <Select value={status} onValueChange={setStatus}>
@@ -184,7 +177,6 @@ export default function TaskForm({fetchTasks}:{
             </Select>
           </div>
 
-          {/* Priority */}
           <div>
             <label className="text-sm font-medium">Priority</label>
             <Select value={priority} onValueChange={setPriority}>
@@ -216,32 +208,39 @@ export default function TaskForm({fetchTasks}:{
                   mode="single"
                   selected={dueDate}
                   onSelect={setDueDate}
-                //   initialFocus
-                autoFocus
+                  disabled={(date) => date < today}
+                  autoFocus
                 />
               </PopoverContent>
             </Popover>
           </div>
 
-           <div>
-            <label className="text-sm font-medium block">Add assignee</label>
-            <AssignUserPopover users={users} setValue={setValue} value={value} />
-           
+          <div>
+            <label className="text-sm font-medium block">Assign to</label>
+            <AssignUserPopover
+              users={users}
+              setValue={setValue}
+              value={value}
+            />
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
             <Button
               type="button"
               variant="ghost"
-              onClick={() => {closeModal();resetForm()}}
+              onClick={() => {
+                closeModal();
+                resetForm();
+              }}
             >
               Cancel
             </Button>
-            <Button disabled={isLoading} type="submit">{isEdit?"Update":"Create"} Task</Button>
+            <Button disabled={isLoading} type="submit">
+              {isEdit ? "Update" : "Create"} Task
+            </Button>
           </div>
         </form>
       </DialogContent>
     </Dialog>
   );
 }
-

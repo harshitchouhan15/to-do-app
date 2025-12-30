@@ -99,7 +99,7 @@ export default function TaskDetailsPage() {
                 {task.assignedTo?.name.slice(0,2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <span className="text-sm">{task.assignedTo?.name}</span>
+            <span className="text-sm">{ task.assignedTo._id=== user?._id?"You": task.assignedTo?.name}</span>
             </div>
             :
             <p>Not assigned</p>

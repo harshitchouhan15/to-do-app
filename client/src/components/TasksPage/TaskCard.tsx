@@ -64,7 +64,6 @@ export default function TaskCard(task: ITask) {
          
         </div>
 
-        {/* Description */}
         <p className="text-sm text-muted-foreground line-clamp-1">
           {description}
         </p>
@@ -79,7 +78,6 @@ export default function TaskCard(task: ITask) {
         <PriorityChip priority={priority} />
 
 
-        {/* Footer */}
         <div className="flex items-center gap-3 pt-2">
             <p className="text-muted-foreground text-sm" >Assigned to:</p>
 

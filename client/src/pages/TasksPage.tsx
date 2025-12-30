@@ -4,7 +4,7 @@ import { ModalProvider } from "@/context/ModalContext";
 import api from "@/lib/axios";
 import { showErrMsg } from "@/lib/utils";
 import type { ITask } from "@/types";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import TaskDeleteModal from "@/components/TasksPage/TaskDeleteModal";
 import Pagination from "@/components/Pagination";
 import Loader from "@/components/Loader";
@@ -13,10 +13,13 @@ const TasksPage = () => {
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
+  const ref = useRef<HTMLDivElement>(null)
 
   const [page, setPage] = useState(1);
 
   useEffect(() => {
+    ref.current?.scrollIntoView({behavior:"smooth", block:'start'  })
+    
     fetchTasks();
   }, [page]);
 
@@ -38,7 +41,7 @@ const TasksPage = () => {
 
   return (
     <ModalProvider>
-      <div className="flex flex-col min-h-screen ">
+      <div ref={ref} className="flex flex-col min-h-screen ">
         <div className="flex top-0 pt-6 sticky z-10 pb-2 bg-gray-100 items-center justify-between ">
           <h1 className=" text-2xl ">Manage tasks here</h1>
           <TaskForm fetchTasks={fetchTasks} />
@@ -49,7 +52,7 @@ const TasksPage = () => {
           isLoading?
           <Loader/>
           :
-          <div className="flex flex-1 justify-between pb-6 flex-col">
+          <div  className="flex flex-1 justify-between pb-6 flex-col">
           <div className="flex flex-col gap-3 w-[60%] mx-auto py-8 ">
             {tasks.map((task) => (
               <TaskCard key={task._id} {...task} />
