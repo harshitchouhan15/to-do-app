@@ -6,30 +6,21 @@ import { showErrMsg } from "@/lib/utils";
 import type { ITask } from "@/types";
 import React, { useEffect, useRef, useState } from "react";
 import TaskDeleteModal from "@/components/TasksPage/TaskDeleteModal";
-import Pagination from "@/components/Pagination";
 import Loader from "@/components/Loader";
 
 const TasksPage = () => {
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [totalPages, setTotalPages] = useState(1);
   const ref = useRef<HTMLDivElement>(null)
 
-  const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    ref.current?.scrollIntoView({behavior:"smooth", block:'start'  })
-    
-    fetchTasks();
-  }, [page]);
 
   const fetchTasks = () => {
     api
-      .get(`/tasks?page=${page}&limit=${4}`)
+      .get(`/tasks`)
       .then((res) => {
         // console.log(res.data)
         setTasks(res.data.tasks);
-        setTotalPages(res.data.totalPages);
       })
       .catch((err) => {
         showErrMsg(err);
@@ -38,6 +29,10 @@ const TasksPage = () => {
         setIsLoading(false);
       });
   };
+
+  useEffect(()=>{
+    fetchTasks()
+  },[])
 
   return (
     <ModalProvider>
@@ -60,11 +55,7 @@ const TasksPage = () => {
           </div>
 
           {/* Next */}
-          <Pagination
-            onPageChange={setPage}
-            totalPages={totalPages}
-            currentPage={page}
-          />
+        
         </div>
         }
       </div>

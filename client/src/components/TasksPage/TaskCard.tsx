@@ -21,10 +21,9 @@ export default function TaskCard(task: ITask) {
   title,
   description,
   status,
-  priority,
-  assignedTo,
+  
   _id,
-  dueDate
+  createdAt
   
 } = task
     const {openModal,} = useModal()
@@ -34,7 +33,7 @@ export default function TaskCard(task: ITask) {
     <div onClick={()=>{
         navigate("/tasks/"+_id)
     }}
-      className={`relative cursor-pointer  transition border-t shadow-md ${priorityStyles[priority]}`}
+      className={`relative cursor-pointer  transition border-t shadow-md `}
     >
       {/* Actions */}
       <div className="absolute top-3 right-3  flex gap-1">
@@ -69,33 +68,15 @@ export default function TaskCard(task: ITask) {
         </p>
 
         <div className="flex items-center gap-3 ">
-            <p className="text-red-600 text-sm" >Due date:</p>
+            <p className="text-red-600 text-sm" >Created date:</p>
             <p className="text-sm text-muted-foreground line-clamp-1">
-          {format(dueDate, "PPP") }
+          {format(createdAt, "PPP") }
         </p>
         </div>
 
-        <PriorityChip priority={priority} />
 
 
-        <div className="flex items-center gap-3 pt-2">
-            <p className="text-muted-foreground text-sm" >Assigned to:</p>
-
-          {
-            assignedTo?.name?
-            <div className="flex items-center gap-2">
-            <Avatar className="h-7 w-7">
-              <AvatarFallback className=" bg-[#15023a] text-white text-sm " >
-                {assignedTo?.name.slice(0,2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-sm">{ assignedTo._id===user?._id?"You": assignedTo?.name}</span>
-          </div>
-          :
-            <span className="text-sm">Not assigned</span>
-
-          }
-        </div>
+       
       </div>
     </div>
   );

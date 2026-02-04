@@ -38,20 +38,12 @@ export default function TaskForm({ fetchTasks }: { fetchTasks: () => void }) {
   const { modalType, openModal, closeModal, data } = useModal();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("todo");
-  const [priority, setPriority] = useState("medium");
+  const [status, setStatus] = useState("pending");
   const [dueDate, setDueDate] = useState<Date | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const [value, setValue] = React.useState("");
 
-  const [users, setUsers] = useState([]);
 
-  useEffect(() => {
-    api
-      .get("/tasks/users/all")
-      .then((res) => setUsers(res.data))
-      .catch((err) => {});
-  }, []);
 
   const isEdit = Boolean(data);
 
@@ -59,25 +51,18 @@ export default function TaskForm({ fetchTasks }: { fetchTasks: () => void }) {
     if (modalType === "task" && data) {
       setTitle(data?.title);
       setDescription(data.description);
-      setDueDate(new Date(data.dueDate));
-      setPriority(data.priority);
       setStatus(data.status);
-      data.assignedTo?._id && setValue(data.assignedTo._id);
     }
   }, [data, modalType]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!dueDate) return toast.warning("Due date is required!");
 
     const payload = {
       title,
       description,
       status,
-      priority,
-      dueDate,
-      assignedTo: value || null,
     };
 
     setIsLoading(true);
@@ -109,7 +94,6 @@ export default function TaskForm({ fetchTasks }: { fetchTasks: () => void }) {
     setTitle("");
     setDescription("");
     setDueDate(undefined);
-    setPriority("medium");
     setStatus("todo");
     setValue("");
   };
@@ -170,59 +154,15 @@ export default function TaskForm({ fetchTasks }: { fetchTasks: () => void }) {
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todo">Todo</SelectItem>
-                <SelectItem value="in-progress">In Progress</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="completed">Completed</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div>
-            <label className="text-sm font-medium">Priority</label>
-            <Select value={priority} onValueChange={setPriority}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select priority" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
 
-          <div>
-            <label className="text-sm font-medium block">Due Date</label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className=" justify-start text-left font-normal"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dueDate ? format(dueDate, "PPP") : "Pick a date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={dueDate}
-                  onSelect={setDueDate}
-                  disabled={(date) => date < today}
-                  autoFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
 
-          <div>
-            <label className="text-sm font-medium block">Assign to</label>
-            <AssignUserPopover
-              users={users}
-              setValue={setValue}
-              value={value}
-            />
-          </div>
+
 
           <div className="flex justify-end gap-2 pt-4">
             <Button
