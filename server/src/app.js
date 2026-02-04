@@ -1,9 +1,13 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
+
 import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/auth.routes.js";
 import taskRoutes from "./routes/task.routes.js";
+
+
 
 const app = express();
 
@@ -26,7 +30,7 @@ app.use( (req, res, next) => {
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://to-do-app-pwpc.onrender.com",
     credentials: true,
   })
 );
