@@ -1,4 +1,4 @@
-# 📝 Task Manager (MERN Stack)
+# 📝 Todo app (MERN Stack)
 
 A full-stack task management application built using the **MERN stack**, featuring authentication, task assignment, pagination, and a clean modern UI.
 

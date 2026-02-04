@@ -2,7 +2,6 @@ import express from "express";
 import {
   createTask,
   getTasks,
-  getTask,
   updateTask,
   deleteTask,
   getAllUsers,
@@ -16,7 +15,6 @@ router.use(verifyToken);
 
 router.post("/", asyncHandler(createTask));
 router.get("/", asyncHandler(getTasks));
-router.get("/:id", asyncHandler(getTask));
 router.put("/:id", asyncHandler(updateTask));
 router.delete("/:id", asyncHandler(deleteTask));
 

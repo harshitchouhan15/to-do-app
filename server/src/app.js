@@ -38,6 +38,17 @@ app.get("/", (req,res)=>{
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 
+// 1. Serve the static files from the Vite build "dist" folder
+app.use(express.static(path.join(__dirname, '../../client/dist')));
+
+
+
+// 3. The "Catch-All" route
+// If the user hits a route that isn't an API, send them the index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../client/dist', 'index.html'));
+});
+
 
 
 app.use((err, req, res, next) => {
